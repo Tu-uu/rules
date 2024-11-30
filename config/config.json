@@ -20,10 +20,11 @@
         },
         {
             "name": "No_HK",
-            "description": "香港地区规则",
+            "description": "非HK规则",
             "tags": ["region", "hongkong"],
             "urls": [
-                "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/No_HK/No_HK.json"
+                "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/No_HK/No_HK.json",
+                "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo-lite/geosite/tiktok.srs"
             ],
             "validate": false
         }
