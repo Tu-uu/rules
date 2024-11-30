@@ -1,39 +1,45 @@
 name: Update Rules
 
 on:
+  workflow_dispatch:  # 允许手动触发
   schedule:
-    - cron: '0 0 * * *'  # 每天 UTC 0:00 运行
-  workflow_dispatch:      # 允许手动触发
+    - cron: '0 0 * * *'  # 每天运行一次
 
 jobs:
   update:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-        
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.x'
-        
-    - name: Run conversions
+        python-version: '3.9'
+
+    - name: Install dependencies
       run: |
-        python conversion/json_to_srs.py
-        python conversion/clash_to_singbox.py
-        
-    - name: Check for changes
-      id: check_changes
+        python -m pip install --upgrade pip
+        pip install requests PyYAML
+
+    - name: Create output directory and set permissions
       run: |
-        git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
-        
+        mkdir -p ./rules
+        chmod -R 777 ./rules
+
+    - name: Run script
+      run: python conversion/clash_to_singbox.py
+
+    - name: List generated files
+      run: |
+        echo "Files in the rules directory:"
+        ls -l ./rules
+
     - name: Commit and push if changed
-      if: steps.check_changes.outputs.changes == 'true'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add rules/
-        git commit -m "Auto update rules $(date +'%Y-%m-%d')"
+        git commit -m "Update rules" || exit 0
         git push
