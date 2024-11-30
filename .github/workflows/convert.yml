@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - 'rules/rules/*.json'
+      - 'rules/*.json'
 
 jobs:
   convert:
@@ -24,10 +24,11 @@ jobs:
       with:
         python-version: '3.9'
         
-    - name: Create rules directory
+    - name: Setup rules directory
       run: |
         mkdir -p rules/rules
-        chmod -R 777 rules
+        cp rules/*.json rules/rules/
+        ls -la rules/rules/
         
     - name: Run converter
       run: |
