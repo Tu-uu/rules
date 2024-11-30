@@ -57,10 +57,10 @@ def convert_json_to_srs(json_file_path):
         
     except Exception as e:
         logger.error(f"Error converting {json_file_path}: {str(e)}")
-        raise e  # 抛出异常以便查看详细错误信息
+        raise e
 
 def process_rules():
-    rules_dir = Path('rules/rules')
+    rules_dir = Path('rules')
     logger.info(f"Looking for JSON files in: {rules_dir.absolute()}")
     
     if not rules_dir.exists():
