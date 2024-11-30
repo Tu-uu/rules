@@ -12,17 +12,26 @@ def convert_json_to_srs(json_file_path):
             data = json.load(f)
         
         srs_content = []
-        for rule_type in ['domain', 'domain_suffix', 'domain_keyword']:
-            if rule_type in data:
-                for item in data[rule_type]:
-                    if rule_type == 'domain':
-                        srs_content.append(f"DOMAIN,{item}")
-                    elif rule_type == 'domain_suffix':
-                        srs_content.append(f"DOMAIN-SUFFIX,{item}")
-                    elif rule_type == 'domain_keyword':
-                        srs_content.append(f"DOMAIN-KEYWORD,{item}")
+        # 处理 rules 数组中的每个规则
+        for rule in data.get('rules', []):
+            # 处理 domain
+            for domain in rule.get('domain', []):
+                srs_content.append(f"DOMAIN,{domain}")
+            
+            # 处理 domain_suffix
+            for suffix in rule.get('domain_suffix', []):
+                srs_content.append(f"DOMAIN-SUFFIX,{suffix}")
+            
+            # 处理 domain_keyword
+            if 'domain_keyword' in rule:
+                keyword = rule['domain_keyword']
+                if isinstance(keyword, str):
+                    srs_content.append(f"DOMAIN-KEYWORD,{keyword}")
+                elif isinstance(keyword, list):
+                    for kw in keyword:
+                        srs_content.append(f"DOMAIN-KEYWORD,{kw}")
         
-        # 在同一目录创建 .srs 文件
+        # 创建输出文件路径
         output_path = json_file_path.with_suffix('.srs')
         
         # 写入SRS文件
@@ -30,6 +39,7 @@ def convert_json_to_srs(json_file_path):
             f.write('\n'.join(srs_content))
         
         logger.info(f"Successfully converted {json_file_path} to {output_path}")
+        logger.info(f"Generated {len(srs_content)} rules")
         
     except Exception as e:
         logger.error(f"Error converting {json_file_path}: {str(e)}")
@@ -40,8 +50,8 @@ def process_rules():
     
     # 处理 rules 目录下的所有 JSON 文件
     for json_file in rules_dir.glob('*.json'):
-        if json_file.name != 'openai.json':  # 排除 openai.json
-            convert_json_to_srs(json_file)
+        logger.info(f"Processing {json_file}")
+        convert_json_to_srs(json_file)
 
 if __name__ == '__main__':
     process_rules()
