@@ -42,7 +42,7 @@ def convert_rules(data):
     if not data:
         return None
     
-    version = data.get("version", "1.0.0")
+    version = str(data.get("version", "1.0.0"))
     result = {"version": version, "domain": [], "domain_suffix": [], "domain_keyword": []}
 
     try:
@@ -50,7 +50,7 @@ def convert_rules(data):
             for rule in data["rules"]:
                 for key in result:
                     if isinstance(rule.get(key), list):
-                        result[key].extend(rule.get(key))  # 处理 list 类型，使用 extend
+                        result[key].extend(rule.get(key, []))
                     elif rule.get(key):
                         result[key].append(rule.get(key))
         elif "payload" in data:
