@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "No_HK",
+            "name": "nohk",
             "description": "非HK规则",
             "tags": ["region", "hongkong"],
             "urls": [
