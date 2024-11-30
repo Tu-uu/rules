@@ -1,0 +1,37 @@
+name: Update Rules
+
+on:
+  workflow_dispatch:  # 允许手动触发
+  schedule:
+    - cron: '0 0 * * *'  # 每天运行一次
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests PyYAML
+
+    - name: Create output directory and set permissions
+      run: |
+        mkdir -p ./rules
+        chmod -R 777 ./rules
+
+    - name: Run script
+      run: python conversion/clash_to_singbox.py
+
+    - name: List generated files
+      run: |
+        echo "Files in the rules directory:"
+        ls -l ./rules
