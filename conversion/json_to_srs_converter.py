@@ -20,22 +20,20 @@ def convert_json_to_srs(json_file_path):
         for rule in data.get('rules', []):
             # 处理 domain_suffix
             for suffix in rule.get('domain_suffix', []):
-                # 如果域名已经在其他规则中，跳过
-                if any(suffix in d for d in domain_rules):
-                    continue
                 suffix_rules.add(f"DOMAIN-SUFFIX,{suffix}")
             
             # 处理 domain
             for domain in rule.get('domain', []):
-                # 如果域名已经在后缀规则中，跳过
-                if any(domain.endswith(s.split(',')[1]) for s in suffix_rules):
-                    continue
                 domain_rules.add(f"DOMAIN,{domain}")
             
             # 处理 domain_keyword
             keywords = rule.get('domain_keyword', [])
             if isinstance(keywords, str):
                 keywords = [keywords]
+            elif isinstance(keywords, list):
+                keywords = keywords
+            else:
+                keywords = []
             for keyword in keywords:
                 keyword_rules.add(f"DOMAIN-KEYWORD,{keyword}")
         
@@ -47,7 +45,7 @@ def convert_json_to_srs(json_file_path):
         # 合并所有规则
         all_rules = suffix_rules + domain_rules + keyword_rules
         
-        # 创建输出文件路径
+        # 创建输出文件路径（在同一目录下）
         output_path = json_file_path.with_suffix('.srs')
         
         # 写入SRS文件
@@ -59,12 +57,20 @@ def convert_json_to_srs(json_file_path):
         
     except Exception as e:
         logger.error(f"Error converting {json_file_path}: {str(e)}")
+        raise e  # 抛出异常以便查看详细错误信息
 
 def process_rules():
     rules_dir = Path('rules/rules')
+    logger.info(f"Looking for JSON files in: {rules_dir.absolute()}")
     
-    # 处理所有 .json 文件，不再排除任何文件
-    for json_file in rules_dir.glob('*.json'):
+    if not rules_dir.exists():
+        logger.error(f"Directory not found: {rules_dir}")
+        return
+    
+    json_files = list(rules_dir.glob('*.json'))
+    logger.info(f"Found JSON files: {[f.name for f in json_files]}")
+    
+    for json_file in json_files:
         logger.info(f"Processing {json_file}")
         convert_json_to_srs(json_file)
 
