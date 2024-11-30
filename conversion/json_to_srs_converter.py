@@ -60,8 +60,13 @@ def convert_json_to_srs(json_file_path):
         raise e
 
 def process_rules():
-    rules_dir = Path('rules/rules')  # 修正路径
-    logger.info(f"Looking for JSON files in: {rules_dir.absolute()}")
+    # 获取当前工作目录
+    current_dir = Path.cwd()
+    logger.info(f"Current working directory: {current_dir}")
+    
+    # 查找 rules 目录
+    rules_dir = current_dir / 'rules'
+    logger.info(f"Looking for JSON files in: {rules_dir}")
     
     if not rules_dir.exists():
         logger.error(f"Directory not found: {rules_dir}")
