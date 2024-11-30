@@ -24,21 +24,15 @@ jobs:
       with:
         python-version: '3.9'
         
-    - name: Setup rules directory
-      run: |
-        mkdir -p rules/rules
-        cp rules/*.json rules/rules/
-        ls -la rules/rules/
-        
     - name: Run converter
       run: |
         python conversion/json_to_srs_converter.py
-        ls -la rules/rules/
+        ls -la rules/
         
     - name: Commit changes
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add rules/rules/*.srs
+        git add rules/*.srs
         git commit -m "Auto convert JSON to SRS" || echo "No changes to commit"
         git push || echo "No changes to push"
