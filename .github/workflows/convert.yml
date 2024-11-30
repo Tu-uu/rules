@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - 'rules/rules/*.json'
+      - 'rules/*.json'
 
 jobs:
   convert:
@@ -24,15 +24,20 @@ jobs:
       with:
         python-version: '3.9'
         
+    - name: Debug directory structure
+      run: |
+        pwd
+        ls -la
+        ls -la rules/
+        
     - name: Run converter
       run: |
         python conversion/json_to_srs_converter.py
-        ls -la rules/rules/
         
     - name: Commit changes
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add rules/rules/*.srs
+        git add rules/*.srs
         git commit -m "Auto convert JSON to SRS" || echo "No changes to commit"
         git push || echo "No changes to push"
