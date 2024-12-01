@@ -4,7 +4,6 @@
     {
       "domain": [
         "ai.google.dev",
-        "aistudio.google.com",
         "alkalicore-pa.clients6.google.com",
         "alkalimakersuite-pa.clients6.google.com",
         "api.github.com",
@@ -15,6 +14,7 @@
         "cdn.usefathom.com",
         "chat.openai.com.cdn.cloudflare.net",
         "copilot.microsoft.com",
+        "developerprofiles-pa.googleapis.com",
         "gateway.ai.cloudflare.com",
         "gateway.bingviz.microsoft.net",
         "gateway.bingviz.microsoftapp.net",
@@ -39,6 +39,7 @@
       ],
       "domain_suffix": [
         "ai.com",
+        "aistudio.google.com",
         "algolia.net",
         "anthropic.com",
         "api.microsoftapp.net",
