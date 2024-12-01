@@ -26,10 +26,17 @@ def fetch_rules(url, session):
         response = session.get(url, timeout=10)
         response.raise_for_status()
         content = response.text
+
+        # 根据文件类型解析内容
         if url.endswith('.json'):
             return json.loads(content)
         elif url.endswith(('.yaml', '.yml')):
             return yaml.safe_load(content)
+        elif url.endswith(('.txt', '.conf')):
+            # 解析简单文本规则，按行分割
+            lines = content.splitlines()
+            payload = [line.strip() for line in lines if line.strip() and not line.startswith("#")]
+            return {"payload": payload}
         else:
             logging.error(f"Unsupported file type for URL: {url}")
             return None
@@ -41,12 +48,12 @@ def convert_rules(data):
     """转换规则格式为统一结构"""
     if not data:
         return None
-    
-    version = str(data.get("version", "1.0.0"))
-    result = {"version": version, "domain": [], "domain_suffix": [], "domain_keyword": []}
+
+    result = {"version": "1.0.0", "domain": [], "domain_suffix": [], "domain_keyword": []}
 
     try:
         if "rules" in data:
+            # 支持 JSON/YAML 格式的规则
             for rule in data["rules"]:
                 for key in result:
                     if isinstance(rule.get(key), list):
@@ -54,6 +61,7 @@ def convert_rules(data):
                     elif rule.get(key):
                         result[key].append(rule.get(key))
         elif "payload" in data:
+            # 支持 TXT/CONF 的规则
             for line in data["payload"]:
                 if line.startswith("DOMAIN,"):
                     result["domain"].append(line.split(",", 1)[1])
@@ -62,14 +70,14 @@ def convert_rules(data):
                 elif line.startswith("DOMAIN-KEYWORD,"):
                     result["domain_keyword"].append(line.split(",", 1)[1])
         
-        # 转换为唯一项，并且保持列表顺序
+        # 转换为唯一项并保持列表顺序
         return {k: sorted(list(set(v))) for k, v in result.items()}
     except Exception as e:
         logging.error(f"规则转换失败: {e}")
         return None
 
 def process_group(group, output_dir, session):
-    """处理规则组并生成文件"""
+    """处理规则组并生成 JSON 文件"""
     logging.info(f"处理规则组: {group['name']}")
     rules_list = []
 
@@ -91,13 +99,13 @@ def process_group(group, output_dir, session):
     if not merged_rules:
         logging.warning(f"规则组 {group['name']} 没有有效规则，跳过写入文件")
         return
-    
+
     # 输出文件路径
     output_file = os.path.join(output_dir, f"{group['name']}.json")
-    
+
     logging.info(f"准备写入文件 {output_file}，规则内容：{json.dumps(merged_rules, ensure_ascii=False, indent=2)}")
-    
-    # 写入输出文件
+
+    # 写入 JSON 文件
     try:
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump({"version": "1.0.0", "rules": [merged_rules]}, f, indent=2, ensure_ascii=False)
