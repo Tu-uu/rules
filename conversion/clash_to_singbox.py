@@ -45,7 +45,7 @@ def fetch_rules(url, session):
         return None
 
 def convert_rules(data):
-    """转换规则格式为统一结构"""
+    """转换规则格式为统一结构，并优化规则"""
     if not data:
         return None
 
@@ -69,9 +69,19 @@ def convert_rules(data):
                     result["domain_suffix"].append(line.split(",", 1)[1])
                 elif line.startswith("DOMAIN-KEYWORD,"):
                     result["domain_keyword"].append(line.split(",", 1)[1])
-        
-        # 转换为唯一项并保持列表顺序
-        return {k: sorted(list(set(v))) for k, v in result.items()}
+
+        # 优化规则：去重并移除冗余
+        result["domain"] = sorted(set(result["domain"]))
+        result["domain_suffix"] = sorted(set(result["domain_suffix"]) - set(result["domain"]))
+        result["domain_keyword"] = sorted(set(result["domain_keyword"]))
+
+        # 去除 domain_keyword 中可能包含的 domain 或 domain_suffix
+        result["domain_keyword"] = [
+            kw for kw in result["domain_keyword"] 
+            if not any(kw in item for item in result["domain"] + result["domain_suffix"])
+        ]
+
+        return result
     except Exception as e:
         logging.error(f"规则转换失败: {e}")
         return None
