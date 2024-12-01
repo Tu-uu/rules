@@ -33,7 +33,9 @@
         "tiktokv.us",
         "ttwebview.com"
       ],
-      "domain_keyword": []
+      "domain_keyword": [
+        "tiktok"
+      ]
     }
   ]
 }

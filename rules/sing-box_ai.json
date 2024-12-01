@@ -39,11 +39,9 @@
       ],
       "domain_suffix": [
         "ai.com",
-        "aistudio.google.com",
         "algolia.net",
         "anthropic.com",
         "api.microsoftapp.net",
-        "api.statsig.com",
         "apis.google.com",
         "auth0.com",
         "bard.google.com",
@@ -62,7 +60,6 @@
         "events.statsigapi.net",
         "featuregates.org",
         "geller-pa.googleapis.com",
-        "gemini.google.com",
         "generativeai.google",
         "generativelanguage.googleapis.com",
         "groq.com",
@@ -72,7 +69,6 @@
         "intercomcdn.com",
         "jasper.ai",
         "launchdarkly.com",
-        "makersuite.google.com",
         "meta.ai",
         "notebooklm.google",
         "notebooklm.google.com",
@@ -88,10 +84,8 @@
         "proactivebackend-pa.googleapis.com",
         "segment.io",
         "sentry.io",
-        "static.cloudflareinsights.com",
         "stripe.com",
-        "turn.livekit.cloud",
-        "x.ai"
+        "turn.livekit.cloud"
       ],
       "domain_keyword": [
         "colab",
