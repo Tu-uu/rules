@@ -1,4 +1,4 @@
 version: 1
 rules:
   - domain:
-      - aistudio.google.com
+      - developerprofiles-pa.googleapis.com
