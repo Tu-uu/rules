@@ -1,14 +1,14 @@
-import requests
-import yaml
-import json
 import os
 import logging
+import json
+import yaml
+import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 # 日志配置
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def create_session():
     """创建会话，增加网络请求的容错性"""
@@ -41,47 +41,33 @@ def fetch_rules(url, session):
             logging.error(f"Unsupported file type for URL: {url}")
             return None
     except Exception as e:
-        logging.error(f"获取规则失败: {url}，错误: {e}")
+        logging.error(f"获取规则失败: {url}, 错误: {e}")
         return None
 
-def convert_rules(data):
+def convert_rules(fetched_data):
     """转换规则格式为统一结构，并优化规则"""
-    if not data:
+    if not fetched_data:
         return None
 
-    result = {"version": "1.0.0", "domain": [], "domain_suffix": [], "domain_keyword": []}
+    converted_rules = {"domain": set(), "domain_suffix": set(), "domain_keyword": set()}
 
     try:
-        if "rules" in data:
-            # 支持 JSON/YAML 格式的规则
-            for rule in data["rules"]:
-                for key in result:
+        if "rules" in fetched_data:
+            for rule in fetched_data["rules"]:
+                for key in converted_rules:
                     if isinstance(rule.get(key), list):
-                        result[key].extend(rule.get(key, []))
+                        converted_rules[key].update(rule.get(key, []))
                     elif rule.get(key):
-                        result[key].append(rule.get(key))
-        elif "payload" in data:
-            # 支持 TXT/CONF 的规则
-            for line in data["payload"]:
+                        converted_rules[key].add(rule.get(key))
+        elif "payload" in fetched_data:
+            for line in fetched_data["payload"]:
                 if line.startswith("DOMAIN,"):
-                    result["domain"].append(line.split(",", 1)[1])
+                    converted_rules["domain"].add(line.split(",", 1)[1])
                 elif line.startswith("DOMAIN-SUFFIX,"):
-                    result["domain_suffix"].append(line.split(",", 1)[1])
+                    converted_rules["domain_suffix"].add(line.split(",", 1)[1])
                 elif line.startswith("DOMAIN-KEYWORD,"):
-                    result["domain_keyword"].append(line.split(",", 1)[1])
-
-        # 优化规则：去重并移除冗余
-        result["domain"] = sorted(set(result["domain"]))
-        result["domain_suffix"] = sorted(set(result["domain_suffix"]) - set(result["domain"]))
-        result["domain_keyword"] = sorted(set(result["domain_keyword"]))
-
-        # 去除 domain_keyword 中可能包含的 domain 或 domain_suffix
-        result["domain_keyword"] = [
-            kw for kw in result["domain_keyword"] 
-            if not any(kw in item for item in result["domain"] + result["domain_suffix"])
-        ]
-
-        return result
+                    converted_rules["domain_keyword"].add(line.split(",", 1)[1])
+        return converted_rules
     except Exception as e:
         logging.error(f"规则转换失败: {e}")
         return None
@@ -89,36 +75,51 @@ def convert_rules(data):
 def process_group(group, output_dir, session):
     """处理规则组并生成 JSON 文件"""
     logging.info(f"处理规则组: {group['name']}")
-    rules_list = []
+    converted_rules_list = []
 
     # 并发获取规则内容
     with ThreadPoolExecutor(max_workers=5) as executor:
         future_to_url = {executor.submit(fetch_rules, url, session): url for url in group["urls"]}
         for future in as_completed(future_to_url):
             url = future_to_url[future]
-            data = future.result()
-            if data:
-                converted = convert_rules(data)
-                if converted:
-                    rules_list.append(converted)
+            fetched_data = future.result()
+            if fetched_data:
+                converted_rules = convert_rules(fetched_data)
+                if converted_rules:
+                    converted_rules_list.append(converted_rules)
 
     # 合并规则
-    merged_rules = {k: sorted({item for sublist in rules_list for item in sublist[k]}) for k in ["domain", "domain_suffix", "domain_keyword"]}
+    merged_domain = set()
+    merged_domain_suffix = set()
+    merged_domain_keyword = set()
 
-    # 确认合并后的规则非空
-    if not merged_rules:
-        logging.warning(f"规则组 {group['name']} 没有有效规则，跳过写入文件")
-        return
+    for rules in converted_rules_list:
+        merged_domain.update(rules["domain"])
+        merged_domain_suffix.update(rules["domain_suffix"])
+        merged_domain_keyword.update(rules["domain_keyword"])
+
+    # 去重并移除冗余
+    merged_domain_suffix -= merged_domain
+    merged_domain_keyword -= merged_domain.union(merged_domain_suffix)
+
+    merged_rules = {
+        "version": "1.0.0",
+        "rules": [
+            {
+                "domain": sorted(merged_domain),
+                "domain_suffix": sorted(merged_domain_suffix),
+                "domain_keyword": sorted(merged_domain_keyword)
+            }
+        ]
+    }
 
     # 输出文件路径
     output_file = os.path.join(output_dir, f"{group['name']}.json")
 
-    logging.info(f"准备写入文件 {output_file}，规则内容：{json.dumps(merged_rules, ensure_ascii=False, indent=2)}")
-
     # 写入 JSON 文件
     try:
         with open(output_file, "w", encoding="utf-8") as f:
-            json.dump({"version": "1.0.0", "rules": [merged_rules]}, f, indent=2, ensure_ascii=False)
+            json.dump(merged_rules, f, indent=2, ensure_ascii=False)
         logging.info(f"规则文件已生成: {output_file}")
     except Exception as e:
         logging.error(f"写入规则文件失败: {e}")
