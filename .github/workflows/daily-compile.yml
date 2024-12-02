@@ -37,7 +37,7 @@ jobs:
         ls -l rules/
         for file in rules/*.json; do
           echo "Compiling $file"
-          ./sing-box rule-set compile --output rules/${file%.json}.srs $file
+          ./sing-box rule-set compile --output rules/${file##*/}.srs $file
         done
 
     # 5. 上传生成的 SRS 文件
