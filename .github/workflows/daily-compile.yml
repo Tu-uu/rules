@@ -48,7 +48,16 @@ jobs:
         echo "Listing generated SRS files:"
         ls -l rules/*.srs
 
-    # 6. 上传生成的 SRS 文件
+    # 6. 提交 .srs 文件到 GitHub 仓库
+    - name: Commit and push SRS files
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git add rules/*.srs
+        git commit -m "Add compiled SRS files"
+        git push
+
+    # 7. 上传生成的 SRS 文件作为 Artifact
     - name: Upload compiled SRS files
       uses: actions/upload-artifact@v4
       with:
