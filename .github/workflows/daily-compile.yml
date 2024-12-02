@@ -22,17 +22,21 @@ jobs:
         chmod +x sing-box-1.10.3-linux-amd64/sing-box
         mv sing-box-1.10.3-linux-amd64/sing-box ./sing-box
 
-    # 3. 编译 rules/ 目录中的 JSON 文件为 SRS
+    # 3. 创建输出目录
+    - name: Create output directory
+      run: |
+        mkdir -p rules
+
+    # 4. 编译 rules/ 目录中的 JSON 文件为 SRS，保存到 rules/ 目录
     - name: Compile JSON to SRS
       run: |
-        mkdir -p compiled
         for file in rules/*.json; do
-          ./sing-box rule-set compile --output compiled/${file%.json}.srs $file
+          ./sing-box rule-set compile --output rules/${file%.json}.srs $file
         done
 
-    # 4. 上传生成的 SRS 文件
+    # 5. 上传生成的 SRS 文件
     - name: Upload compiled SRS files
       uses: actions/upload-artifact@v3
       with:
         name: srs-files
-        path: rules/
+        path: rules/*.srs
