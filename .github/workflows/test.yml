@@ -1,24 +1,8 @@
-name: 测试 Setup Git 和网络连接
+name: Test Workflow
 on: workflow_dispatch
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v3
-      - name: 设置 Git
-        uses: actions/setup-git@v2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: 测试网络连接
-        run: ping google.com -c 3
-        if: always() # 即使 ping 失败，也要继续执行后续步骤
-      - name: 测试 GitHub API 访问
-        run: curl -s -H "Accept: application/vnd.github+json" -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/user || echo "GitHub API 访问失败"
-        if: always() # 即使 API 访问失败，也要继续执行后续步骤
-      - name: 打印 Git 版本
-        run: git --version
-      - name: 打印工作目录
-        run: pwd
-      - name: 列出工作目录内容
-        run: ls -al
+      - name: Print Hello World
+        run: echo "Hello, world!"
