@@ -17,7 +17,7 @@ jobs:
     # 2. 安装 sing-box
     - name: Install sing-box
       run: |
-        curl -L https://github.com/SagerNet/sing-box/releases/latest/download/sing-box-linux-amd64.tar.gz -o sing-box.tar.gz
+        curl -L https://github.com/SagerNet/sing-box/releases/download/v1.10.3/sing-box-1.10.3-linux-amd64.tar.gz -o sing-box.tar.gz
         tar -xvf sing-box.tar.gz
         chmod +x sing-box
 
