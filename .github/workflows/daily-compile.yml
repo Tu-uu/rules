@@ -7,7 +7,7 @@ on:
 
 jobs:
   compile-srs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # 使用 Ubuntu 22.04 作为稳定版本
 
     steps:
     # 1. 检查出代码
@@ -19,6 +19,7 @@ jobs:
       run: |
         curl -L https://github.com/SagerNet/sing-box/releases/download/v1.10.3/sing-box-1.10.3-linux-amd64.tar.gz -o sing-box.tar.gz
         tar -xvf sing-box.tar.gz
+        echo "Listing files in the extracted directory:"
         ls -l sing-box-1.10.3-linux-amd64/
         chmod +x sing-box-1.10.3-linux-amd64/sing-box
         mv sing-box-1.10.3-linux-amd64/sing-box ./sing-box
@@ -32,7 +33,10 @@ jobs:
     # 4. 编译 rules/ 目录中的 JSON 文件为 SRS，保存到 rules/ 目录
     - name: Compile JSON to SRS
       run: |
+        echo "Listing files in rules/ directory:"
+        ls -l rules/
         for file in rules/*.json; do
+          echo "Compiling $file"
           ./sing-box rule-set compile --output rules/${file%.json}.srs $file
         done
 
