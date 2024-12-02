@@ -19,13 +19,15 @@ jobs:
       run: |
         curl -L https://github.com/SagerNet/sing-box/releases/download/v1.10.3/sing-box-1.10.3-linux-amd64.tar.gz -o sing-box.tar.gz
         tar -xvf sing-box.tar.gz
+        ls -l sing-box-1.10.3-linux-amd64/
         chmod +x sing-box-1.10.3-linux-amd64/sing-box
         mv sing-box-1.10.3-linux-amd64/sing-box ./sing-box
 
-    # 3. 创建输出目录
+    # 3. 创建输出目录并设置权限
     - name: Create output directory
       run: |
         mkdir -p rules
+        chmod 777 rules
 
     # 4. 编译 rules/ 目录中的 JSON 文件为 SRS，保存到 rules/ 目录
     - name: Compile JSON to SRS
