@@ -103,7 +103,7 @@ def process_group(group, output_dir, session):
     merged_domain_keyword -= merged_domain.union(merged_domain_suffix)
 
     merged_rules = {
-        "version": "1.0.0",
+        "version": 1,
         "rules": [
             {
                 "domain": sorted(merged_domain),
