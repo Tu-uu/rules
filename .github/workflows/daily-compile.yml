@@ -52,6 +52,7 @@ jobs:
         git config user.name "GitHub Actions"
         git config user.email "actions@github.com"
         git add rules/*.srs
+        git add -A  # 强制添加所有文件
         git commit -m "Add compiled SRS files"
         git push origin HEAD:${{ github.ref }}
       env:
