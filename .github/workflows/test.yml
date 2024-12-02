@@ -12,3 +12,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: 打印版本
         run: git --version
+
+
+- name: Test GitHub API Access
+  run: curl -H "Accept: application/vnd.github+json" -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/user
