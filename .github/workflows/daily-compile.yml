@@ -13,10 +13,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Setup Git Credentials
-      uses: actions/setup-git@v2
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }} # Use the GitHub Actions token
+    # 注释掉 Setup Git 步骤，用于测试
+    # - name: Setup Git Credentials
+    #   uses: actions/setup-git@v2
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }} # Use the GitHub Actions token
+
+    - name: Test GitHub connection
+      run: curl -I https://api.github.com
 
     - name: Install sing-box
       run: |
