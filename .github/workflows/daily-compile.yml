@@ -13,11 +13,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 注释掉 Setup Git 步骤，用于测试
-    # - name: Setup Git Credentials
-    #   uses: actions/setup-git@v2
-    #   with:
-    #     github_token: ${{ secrets.GITHUB_TOKEN }} # Use the GitHub Actions token
+    - name: Setup Git Credentials
+      uses: actions/setup-git@v2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Test GitHub connection
       run: curl -I https://api.github.com
@@ -42,7 +41,16 @@ jobs:
           ./sing-box rule-set compile --output "$output_file" "$file" || exit 1 # Exit if compilation fails
         done
 
-    - name: Upload compiled SRS files
+    - name: Add and commit changes
+      run: |
+        git add rules/*.srs
+        git commit -m "Update SRS files" || exit 0
+
+    - name: Push changes
+      run: |
+        git push origin main # Replace 'main' with your branch name
+
+    - name: Upload compiled SRS files (optional, keep for backup)
       uses: actions/upload-artifact@v4
       with:
         name: srs-files
