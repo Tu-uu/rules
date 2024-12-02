@@ -46,7 +46,14 @@ jobs:
         echo "Listing generated SRS files:"
         ls -l rules/*.srs
 
-    # 6. 提交 .srs 文件到 GitHub 仓库
+    # 6. 清理不必要的文件
+    - name: Clean up unnecessary files
+      run: |
+        rm -rf sing-box-1.10.3-linux-amd64
+        rm -f sing-box.tar.gz
+        rm -f sing-box
+
+    # 7. 提交 .srs 文件到 GitHub 仓库
     - name: Commit and push SRS files
       run: |
         git config user.name "GitHub Actions"
@@ -58,7 +65,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # 7. 上传生成的 SRS 文件作为 Artifact
+    # 8. 上传生成的 SRS 文件作为 Artifact
     - name: Upload compiled SRS files
       uses: actions/upload-artifact@v4
       with:
