@@ -7,59 +7,44 @@ on:
 
 jobs:
   compile-srs:
-    runs-on: ubuntu-22.04  # 使用 Ubuntu 22.04 作为稳定版本
+    runs-on: ubuntu-22.04
 
     steps:
-    # 1. 检查出代码
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2. 安装 sing-box
+    - name: Setup Git Credentials
+      uses: actions/setup-git@v2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }} # Use the GitHub Actions token
+
     - name: Install sing-box
       run: |
         curl -L https://github.com/SagerNet/sing-box/releases/download/v1.10.3/sing-box-1.10.3-linux-amd64.tar.gz -o sing-box.tar.gz
         tar -xvf sing-box.tar.gz
-        echo "Listing files in the extracted directory:"
-        ls -l sing-box-1.10.3-linux-amd64/
         chmod +x sing-box-1.10.3-linux-amd64/sing-box
         mv sing-box-1.10.3-linux-amd64/sing-box ./sing-box
 
-    # 3. 创建输出目录并设置权限
     - name: Create output directory
       run: |
         mkdir -p rules
-        chmod 777 rules
+        chmod 777 rules # Consider a more restrictive permission if possible (e.g., 755)
 
-    # 4. 编译 rules/ 目录中的 JSON 文件为 SRS，保存到 rules/ 目录
     - name: Compile JSON to SRS
       run: |
-        echo "Listing files in rules/ directory:"
-        ls -l rules/
         for file in rules/*.json; do
-          # 去除 .json 后缀，只留下文件名
           output_file="rules/$(basename ${file%.json}).srs"
           echo "Compiling $file to $output_file"
-          ./sing-box rule-set compile --output $output_file $file
+          ./sing-box rule-set compile --output "$output_file" "$file" || exit 1 # Exit if compilation fails
         done
 
-    # 5. 验证文件是否已正确生成
-    - name: Verify generated files
-      run: |
-        echo "Listing generated SRS files:"
-        ls -l rules/*.srs
-
-    # 6. 提交 .srs 文件到 GitHub 仓库
-    - name: Commit and push SRS files
-      run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
-        git add rules/*.srs
-        git commit -m "Add compiled SRS files"
-        git push
-
-    # 7. 上传生成的 SRS 文件作为 Artifact
     - name: Upload compiled SRS files
       uses: actions/upload-artifact@v4
       with:
         name: srs-files
         path: rules/*.srs
+
+    - name: List generated SRS files (for logging)
+      run: |
+        echo "Listing generated SRS files:"
+        ls -l rules/*.srs
