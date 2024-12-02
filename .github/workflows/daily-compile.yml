@@ -40,9 +40,15 @@ jobs:
           ./sing-box rule-set compile --output rules/${file##*/}.srs $file
         done
 
-    # 5. 上传生成的 SRS 文件
+    # 5. 验证文件是否已正确生成
+    - name: Verify generated files
+      run: |
+        echo "Listing generated SRS files:"
+        ls -l rules/*.srs
+
+    # 6. 上传生成的 SRS 文件
     - name: Upload compiled SRS files
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: srs-files
         path: rules/*.srs
