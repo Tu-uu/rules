@@ -15,11 +15,12 @@ jobs:
       uses: actions/checkout@v3
 
     # 2. 安装 sing-box
-    - name: Install sing-box
+     - name: Install sing-box
       run: |
         curl -L https://github.com/SagerNet/sing-box/releases/download/v1.10.3/sing-box-1.10.3-linux-amd64.tar.gz -o sing-box.tar.gz
         tar -xvf sing-box.tar.gz
-        chmod +x sing-box
+        chmod +x $(find . -name sing-box)
+        mv $(find . -name sing-box) ./sing-box
 
     # 3. 编译 rules/ 目录中的 JSON 文件为 SRS
     - name: Compile JSON to SRS
