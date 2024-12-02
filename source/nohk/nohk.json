@@ -5,9 +5,7 @@
       "domain_suffix": [
         "imgur.com",
         "okx.com"
-      ],
-      "domain_keyword": [],
-      "outbound": "direct"
+      ]
     }
   ]
 }
