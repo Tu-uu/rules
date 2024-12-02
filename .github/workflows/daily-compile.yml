@@ -36,8 +36,10 @@ jobs:
         echo "Listing files in rules/ directory:"
         ls -l rules/
         for file in rules/*.json; do
-          echo "Compiling $file"
-          ./sing-box rule-set compile --output rules/${file##*/}.srs $file
+          # 去除 .json 后缀，只留下文件名
+          output_file="rules/$(basename ${file%.json}).srs"
+          echo "Compiling $file to $output_file"
+          ./sing-box rule-set compile --output $output_file $file
         done
 
     # 5. 验证文件是否已正确生成
