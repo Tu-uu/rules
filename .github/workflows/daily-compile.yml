@@ -19,22 +19,24 @@ jobs:
       run: |
         curl -L https://github.com/SagerNet/sing-box/releases/download/v1.10.3/sing-box-1.10.3-linux-amd64.tar.gz -o sing-box.tar.gz
         tar -xvf sing-box.tar.gz
+        echo "Listing files in the extracted directory:"
+        ls -l sing-box-1.10.3-linux-amd64/
         chmod +x sing-box-1.10.3-linux-amd64/sing-box
         mv sing-box-1.10.3-linux-amd64/sing-box ./sing-box
-        ./sing-box version  # 检查 Sing-box 是否正确安装
 
     # 3. 创建输出目录并设置权限
     - name: Create output directory
       run: |
         mkdir -p rules
         chmod 777 rules
-        echo "Listing files in rules/ directory:"
-        ls -l rules/
 
     # 4. 编译 rules/ 目录中的 JSON 文件为 SRS，保存到 rules/ 目录
     - name: Compile JSON to SRS
       run: |
+        echo "Listing files in rules/ directory:"
+        ls -l rules/
         for file in rules/*.json; do
+          # 去除 .json 后缀，只留下文件名
           output_file="rules/$(basename ${file%.json}).srs"
           echo "Compiling $file to $output_file"
           ./sing-box rule-set compile --output $output_file $file
@@ -46,26 +48,16 @@ jobs:
         echo "Listing generated SRS files:"
         ls -l rules/*.srs
 
-    # 6. 清理不必要的文件
-    - name: Clean up unnecessary files
-      run: |
-        rm -rf sing-box-1.10.3-linux-amd64
-        rm -f sing-box.tar.gz
-        rm -f sing-box
-
-    # 7. 提交 .srs 文件到 GitHub 仓库
+    # 6. 提交 .srs 文件到 GitHub 仓库
     - name: Commit and push SRS files
       run: |
         git config user.name "GitHub Actions"
         git config user.email "actions@github.com"
         git add rules/*.srs
-        git add -A  # 强制添加所有文件
         git commit -m "Add compiled SRS files"
-        git push origin HEAD:${{ github.ref }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        git push
 
-    # 8. 上传生成的 SRS 文件作为 Artifact
+    # 7. 上传生成的 SRS 文件作为 Artifact
     - name: Upload compiled SRS files
       uses: actions/upload-artifact@v4
       with:
