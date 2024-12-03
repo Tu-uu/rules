@@ -3,6 +3,7 @@ name: Daily Compile JSON to SRS
 on:
   schedule:
     - cron: '0 0 * * *'  # 每天凌晨UTC时间
+  workflow_dispatch:     # 允许手动触发
 
 jobs:
   build:
@@ -19,10 +20,10 @@ jobs:
 
       - name: Download sing-box
         run: |
-          curl -L https://github.com/SagerNet/sing-box/releases/download/v1.10.3/sing-box-1.10.3-linux-amd64.tar.gz -o sing-box.tar.gz
+          curl -L https://github.com/SagerNet/sing-box/releases/download/v1.1.9/sing-box-1.1.9-linux-amd64.tar.gz -o sing-box.tar.gz
           tar -xvf sing-box.tar.gz
-          chmod +x sing-box-1.10.3-linux-amd64/sing-box
-          mv sing-box-1.10.3-linux-amd64/sing-box ./sing-box
+          chmod +x sing-box-1.1.9-linux-amd64/sing-box
+          mv sing-box-1.1.9-linux-amd64/sing-box ./sing-box
 
       - name: Create output directory
         run: |
@@ -32,9 +33,9 @@ jobs:
       - name: Compile JSON to SRS
         run: |
           for file in rules/*.json; do
-            output_file="rules/$(basename ${file%.json}).srs"
+            output_file="rules/$(basename "${file%.*}").srs"
             echo "Compiling $file to $output_file"
-            ./sing-box rule-set compile --output $output_file $file
+            ./sing-box rule-set compile --input "$file" --output "$output_file"
           done
 
       - name: Verify generated files
