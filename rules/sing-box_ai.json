@@ -85,6 +85,7 @@
         "proactivebackend-pa.googleapis.com",
         "segment.io",
         "sentry.io",
+        "sora.com",
         "stripe.com",
         "turn.livekit.cloud"
       ],
