@@ -49,9 +49,9 @@
       
         },
         {
-            "name": "usr-CustomDns",
+            "name": "usr-customdns",
             "description": "自定义DNS",
-            "tags": ["CustomDns"],
+            "tags": ["customdns"],
             "urls": [
                 "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/usr-customdns.json"
             ]
