@@ -1,6 +1,0 @@
-version: 1
-rules:
-  - domain:
-      - x.ai
-    domain_suffix:
-      - static.cloudflareinsights.com
