@@ -53,7 +53,7 @@
             "description": "自定义DNS",
             "tags": ["CustomDns"],
             "urls": [
-                "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/customdns.json"
+                "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/usr-customdns.json"
             ]
       
         }        
