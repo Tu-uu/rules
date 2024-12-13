@@ -38,6 +38,15 @@
                 "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/usr-direct.json"
             ]
       
+        },
+        {
+            "name": "usr-block",
+            "description": "封锁规则",
+            "tags": ["block"],
+            "urls": [
+                "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/usr-block.json"
+            ]
+      
         }
     ]
 }
