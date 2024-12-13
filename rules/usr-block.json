@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain": [],
+      "domain_suffix": [
+        "access.mypikpak.com",
+        "access.mypikpak.net",
+        "access.pikpak.me",
+        "access.pikpakdrive.com"
+      ],
+      "domain_keyword": []
+    }
+  ]
+}
