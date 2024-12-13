@@ -8,7 +8,7 @@
     "rule_groups": [
         {
             "name": "sing-box_ai",
-            "description": "AI服务相关规则，包含OpenAI、Claude、Gemini等",
+            "description": "AI相关规则，包含OpenAI、Claude、Gemini等",
             "tags": ["ai", "openai", "claude", "gemini", "copilot"],
             "urls": [
                 "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/openai.json",
@@ -27,6 +27,15 @@
             "urls": [
                 "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/nohk.json",
                 "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo-lite/geosite/tiktok.json"
+            ]
+      
+        },
+        {
+            "name": "usr-direct",
+            "description": "直连规则",
+            "tags": ["direct"],
+            "urls": [
+                "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/usr-direct.json"
             ]
       
         }
