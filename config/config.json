@@ -56,6 +56,15 @@
                 "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/usr-customdns.json"
             ]
       
-        }        
+        },       
+                {
+            "name": "usr-proxy",
+            "description": "代理域名",
+            "tags": ["usr-proxy"],
+            "urls": [
+                "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/usr-proxy.json"
+            ]
+      
+        } 
     ]
 }
