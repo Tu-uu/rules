@@ -2,11 +2,10 @@
   "version": 1,
   "rules": [
     {
-      "domain": [],
-      "domain_suffix": [
-        "platform.deepseek.com",
-        "www.deepseek.com"
+      "domain": [
+        "deepseek.com"
       ],
+      "domain_suffix": [],
       "domain_keyword": []
     }
   ]
