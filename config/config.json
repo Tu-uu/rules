@@ -5,7 +5,8 @@
         "max_rules": 100000,
         "timeout": 10
     },
-    "rule_groups": [
+    "rule_groups": 
+    [
         {
             "name": "sing-box_ai",
             "description": "AI相关规则，包含OpenAI、Claude、Gemini等",
@@ -57,7 +58,7 @@
             ]
       
         },       
-                {
+         {
             "name": "usr-proxy",
             "description": "代理域名",
             "tags": ["usr-proxy"],
@@ -66,5 +67,18 @@
             ]
       
         } 
+
+       {
+            "name": "onlyIPv4",
+            "description": "onlyIPv4",
+            "tags": ["usr-proxy"],
+            "urls": [
+                "https://raw.githubusercontent.com/Tu-uu/rules/refs/heads/main/source/usr-onlyIPv4.json"
+            ]
+      
+       } 
+
+
+        
     ]
 }
